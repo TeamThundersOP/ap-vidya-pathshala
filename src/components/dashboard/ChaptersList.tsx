@@ -18,8 +18,8 @@ const ChaptersList = ({ chapters, subjectColor = "blue", gradeId = 8 }: Chapters
   const showFractions = searchParams.get('showFractions') === 'true';
   
   const handleChapterClick = (chapter: Chapter, index: number) => {
-    // If 8th grade and first chapter (Fractions)
-    if (gradeId === 8 && index === 0) {
+    // Always navigate to the fractions page when clicking the first chapter
+    if (index === 0) {
       navigate(`/chapter/grade/${gradeId}/fractions`);
     }
   };
@@ -34,20 +34,19 @@ const ChaptersList = ({ chapters, subjectColor = "blue", gradeId = 8 }: Chapters
       </div>
       <div className="space-y-4">
         {chapters.map((chapter, index) => {
-          // For 8th grade, first chapter, set progress to 0 if showFractions is true
+          // For first chapter, always set to Fractions with 0% progress
           let progress = undefined;
-          if (gradeId === 8 && index === 0) {
-            // Always set Fractions chapter to 0% progress for 8th grade
+          if (index === 0) {
+            // Always set Fractions chapter to 0% progress
             progress = 0;
             
-            // Replace first chapter title and description for 8th grade
-            if (index === 0) {
-              chapter = {
-                ...chapter,
-                title: "Fractions",
-                description: "Learn operations with fractions including addition, subtraction, multiplication and division"
-              };
-            }
+            // Replace first chapter title and description with Fractions
+            chapter = {
+              ...chapter,
+              title: "Fractions",
+              description: "Learn operations with fractions including addition, subtraction, multiplication and division",
+              status: "in-progress"
+            };
           }
           
           return (
@@ -55,7 +54,7 @@ const ChaptersList = ({ chapters, subjectColor = "blue", gradeId = 8 }: Chapters
               <ChapterCard 
                 title={chapter.title}
                 description={chapter.description}
-                status={gradeId === 8 && index === 0 ? "in-progress" : chapter.status}
+                status={index === 0 ? "in-progress" : chapter.status}
                 duration={chapter.duration}
                 subjectColor={subjectColor}
                 showStudyIcon={index === 0} 

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -104,20 +103,16 @@ const Subjects = () => {
         // Simulating API call delay
         await new Promise(resolve => setTimeout(resolve, 1500));
         
-        // If it's 8th grade, customize the subjects list
-        if (selectedGrade === 8) {
-          const customSubjects = [...mockSubjects];
-          
-          // For 8th grade, set Mathematics to 0% progress
-          const mathSubject = customSubjects.find(s => s.id === "mathematics");
-          if (mathSubject) {
-            mathSubject.progress = 0;
-          }
-          
-          setSubjects(customSubjects);
-        } else {
-          setSubjects(mockSubjects);
+        // Always customize the subjects list for Mathematics
+        const customSubjects = [...mockSubjects];
+        
+        // For Mathematics, always set to 0% progress
+        const mathSubject = customSubjects.find(s => s.id === "mathematics");
+        if (mathSubject) {
+          mathSubject.progress = 0;
         }
+        
+        setSubjects(customSubjects);
       } catch (error) {
         console.error("Error fetching subjects:", error);
       } finally {
@@ -129,20 +124,20 @@ const Subjects = () => {
   }, [selectedGrade, subjectParam]);
 
   useEffect(() => {
-    // Automatically navigate to the subject page if grade is 8 and subject is mathematics
-    if (selectedGrade === 8 && subjectParam && subjectParam.toLowerCase() === "mathematics") {
+    // Automatically navigate to the mathematics subject page with showFractions parameter
+    if (subjectParam && subjectParam.toLowerCase() === "mathematics") {
       // Small delay to show the subjects page briefly
       const timer = setTimeout(() => {
-        navigate(`/subject/mathematics?grade=8&showFractions=true`);
+        navigate(`/subject/mathematics?grade=${selectedGrade}&showFractions=true`);
       }, 200);
       return () => clearTimeout(timer);
     }
   }, [selectedGrade, subjectParam, navigate]);
 
   const handleSubjectClick = (subjectId: string) => {
-    // Special handling for 8th grade mathematics
-    if (selectedGrade === 8 && subjectId === "mathematics") {
-      navigate(`/subject/${subjectId}?grade=8&showFractions=true`);
+    // Special handling for mathematics
+    if (subjectId === "mathematics") {
+      navigate(`/subject/${subjectId}?grade=${selectedGrade}&showFractions=true`);
       return;
     }
     navigate(`/subject/${subjectId}`);
