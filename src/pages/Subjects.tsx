@@ -104,14 +104,14 @@ const Subjects = () => {
         // Simulating API call delay
         await new Promise(resolve => setTimeout(resolve, 1500));
         
-        // If it's 8th grade and a subject parameter exists, customize the subjects list
-        if (selectedGrade === 8 && subjectParam) {
+        // If it's 8th grade, customize the subjects list
+        if (selectedGrade === 8) {
           const customSubjects = [...mockSubjects];
-          const targetSubject = customSubjects.find(s => s.id.toLowerCase() === subjectParam.toLowerCase());
           
-          if (targetSubject) {
-            // Set progress to 0% for the target subject to indicate it's just starting
-            targetSubject.progress = 0;
+          // For 8th grade, set Mathematics to 0% progress
+          const mathSubject = customSubjects.find(s => s.id === "mathematics");
+          if (mathSubject) {
+            mathSubject.progress = 0;
           }
           
           setSubjects(customSubjects);
@@ -133,7 +133,7 @@ const Subjects = () => {
     if (selectedGrade === 8 && subjectParam && subjectParam.toLowerCase() === "mathematics") {
       // Small delay to show the subjects page briefly
       const timer = setTimeout(() => {
-        navigate(`/subject/mathematics`);
+        navigate(`/subject/mathematics?grade=8&showFractions=true`);
       }, 200);
       return () => clearTimeout(timer);
     }

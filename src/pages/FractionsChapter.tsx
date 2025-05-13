@@ -1,10 +1,9 @@
-
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import AdaptiveQuiz, { QuizQuestion, LearningPathway } from '@/components/AdaptiveLearning/AdaptiveQuiz';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, CheckCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle, PlayCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Mock data for the first diagnostic quiz on fractions
@@ -152,6 +151,7 @@ const divisionRemedialQuestions: QuizQuestion[] = [
 ];
 
 type LearningStage = 
+  | 'welcome'
   | 'diagnosticAssessment' 
   | 'learningPathway' 
   | 'conceptReview' 
@@ -161,8 +161,9 @@ type LearningStage =
 
 const FractionsChapter = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { gradeId } = useParams<{ gradeId: string }>();
-  const [learningStage, setLearningStage] = useState<LearningStage>('diagnosticAssessment');
+  const [learningStage, setLearningStage] = useState<LearningStage>('welcome');
   const [quizResults, setQuizResults] = useState({
     score: 0,
     incorrectQuestions: [] as string[],
@@ -174,6 +175,10 @@ const FractionsChapter = () => {
   
   const handleBackToSubject = () => {
     navigate(-1);
+  };
+
+  const handleStartLearning = () => {
+    setLearningStage('diagnosticAssessment');
   };
 
   const handleCompleteDiagnostic = (
@@ -284,6 +289,22 @@ const FractionsChapter = () => {
             <p className="text-gray-600">Personalized Adaptive Learning Journey</p>
           </div>
         </div>
+        
+        {learningStage === 'welcome' && (
+          <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-sm p-8 text-center">
+            <div className="inline-flex items-center justify-center p-6 rounded-full bg-blue-100 text-blue-600 mb-6">
+              <PlayCircle className="h-12 w-12" />
+            </div>
+            <h2 className="text-2xl font-bold mb-4">Welcome to Fractions Chapter</h2>
+            <p className="text-gray-600 mb-8 max-w-xl mx-auto">
+              In this personalized learning journey, you'll master fraction operations through interactive 
+              lessons and adaptive quizzes tailored to your learning needs.
+            </p>
+            <Button size="lg" onClick={handleStartLearning} className="mx-auto">
+              Start Learning
+            </Button>
+          </div>
+        )}
         
         {learningStage === 'diagnosticAssessment' && (
           <AdaptiveQuiz

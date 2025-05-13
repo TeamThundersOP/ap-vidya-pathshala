@@ -36,8 +36,18 @@ const ChaptersList = ({ chapters, subjectColor = "blue", gradeId = 8 }: Chapters
         {chapters.map((chapter, index) => {
           // For 8th grade, first chapter, set progress to 0 if showFractions is true
           let progress = undefined;
-          if (gradeId === 8 && index === 0 && showFractions) {
+          if (gradeId === 8 && index === 0) {
+            // Always set Fractions chapter to 0% progress for 8th grade
             progress = 0;
+            
+            // Replace first chapter title and description for 8th grade
+            if (index === 0) {
+              chapter = {
+                ...chapter,
+                title: "Fractions",
+                description: "Learn operations with fractions including addition, subtraction, multiplication and division"
+              };
+            }
           }
           
           return (
@@ -45,7 +55,7 @@ const ChaptersList = ({ chapters, subjectColor = "blue", gradeId = 8 }: Chapters
               <ChapterCard 
                 title={chapter.title}
                 description={chapter.description}
-                status={chapter.status}
+                status={gradeId === 8 && index === 0 ? "in-progress" : chapter.status}
                 duration={chapter.duration}
                 subjectColor={subjectColor}
                 showStudyIcon={index === 0} 
