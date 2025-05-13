@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import AdaptiveQuiz, { QuizQuestion, LearningPathway } from '@/components/AdaptiveLearning/AdaptiveQuiz';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Mock data for the first diagnostic quiz on fractions
