@@ -1,11 +1,12 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import SubjectCard from "@/components/SubjectCard";
 import { 
   BookOpen, 
-  Beaker,
+  Beaker,  // Replace Flask with Beaker
   BookText, 
   Clock, 
   Globe, 
@@ -13,12 +14,11 @@ import {
   Loader2
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "sonner";
 
 // Mock subject data
 const mockSubjects = [
   {
-    id: "mathematics",
+    id: "1",
     name: "Mathematics",
     description: "Learn algebra, geometry, and calculus concepts",
     coverImage: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=500",
@@ -82,16 +82,7 @@ const mockSubjects = [
 const Subjects = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  
-  // Get grade and subject from URL parameters or use defaults
-  const gradeParam = searchParams.get('grade');
-  const subjectParam = searchParams.get('subject');
-  
-  const [selectedGrade, setSelectedGrade] = useState<number>(
-    gradeParam ? parseInt(gradeParam) : user?.grade || 6
-  );
+  const [selectedGrade] = useState<number>(user?.grade || 6);
   const [isLoading, setIsLoading] = useState(true);
   const [subjects, setSubjects] = useState<any[]>([]);
 
@@ -102,17 +93,7 @@ const Subjects = () => {
       try {
         // Simulating API call delay
         await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Always customize the subjects list for Mathematics
-        const customSubjects = [...mockSubjects];
-        
-        // For Mathematics, always set to 0% progress
-        const mathSubject = customSubjects.find(s => s.id === "mathematics");
-        if (mathSubject) {
-          mathSubject.progress = 0;
-        }
-        
-        setSubjects(customSubjects);
+        setSubjects(mockSubjects);
       } catch (error) {
         console.error("Error fetching subjects:", error);
       } finally {
@@ -121,25 +102,9 @@ const Subjects = () => {
     };
 
     fetchSubjects();
-  }, [selectedGrade, subjectParam]);
-
-  useEffect(() => {
-    // Automatically navigate to the mathematics subject page with showFractions parameter
-    if (subjectParam && subjectParam.toLowerCase() === "mathematics") {
-      // Small delay to show the subjects page briefly
-      const timer = setTimeout(() => {
-        navigate(`/subject/mathematics?grade=${selectedGrade}&showFractions=true`);
-      }, 200);
-      return () => clearTimeout(timer);
-    }
-  }, [selectedGrade, subjectParam, navigate]);
+  }, []);
 
   const handleSubjectClick = (subjectId: string) => {
-    // Special handling for mathematics
-    if (subjectId === "mathematics") {
-      navigate(`/subject/${subjectId}?grade=${selectedGrade}&showFractions=true`);
-      return;
-    }
     navigate(`/subject/${subjectId}`);
   };
 

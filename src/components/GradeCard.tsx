@@ -13,12 +13,6 @@ type GradeCardProps = {
 };
 
 const GradeCard = ({ grade, title, description, color, icon }: GradeCardProps) => {
-  // Create a link to the dashboard with the grade parameter
-  // Special routing for 8th grade to ensure it leads to Mathematics
-  const linkPath = grade === 8 
-    ? "/subjects?subject=mathematics&grade=8" 
-    : `/dashboard?grade=${grade}`;
-
   return (
     <motion.div 
       className={cn(
@@ -61,7 +55,7 @@ const GradeCard = ({ grade, title, description, color, icon }: GradeCardProps) =
         <p className="mt-2 text-gray-600 text-sm">{description}</p>
         
         <Link 
-          to={linkPath} 
+          to={`/dashboard?grade=${grade}`} 
           className={cn(
             "mt-4 inline-flex items-center text-sm font-medium",
             color === "blue" && "text-blue-600",
