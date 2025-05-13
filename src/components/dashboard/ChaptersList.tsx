@@ -3,7 +3,7 @@ import React from "react";
 import ChapterCard from "@/components/ChapterCard";
 import { Button } from "@/components/ui/button";
 import { Chapter } from "@/types/dashboard";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface ChaptersListProps {
   chapters: Chapter[];
@@ -13,9 +13,12 @@ interface ChaptersListProps {
 
 const ChaptersList = ({ chapters, subjectColor = "blue", gradeId = 8 }: ChaptersListProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const showFractions = searchParams.get('showFractions') === 'true';
   
   const handleChapterClick = (chapter: Chapter, index: number) => {
-    // Only route to Fractions chapter for 8th standard first chapter
+    // If 8th grade and first chapter (Fractions)
     if (gradeId === 8 && index === 0) {
       navigate(`/chapter/grade/${gradeId}/fractions`);
     }
@@ -30,18 +33,27 @@ const ChaptersList = ({ chapters, subjectColor = "blue", gradeId = 8 }: Chapters
         </Button>
       </div>
       <div className="space-y-4">
-        {chapters.map((chapter, index) => (
-          <div key={index} onClick={() => handleChapterClick(chapter, index)}>
-            <ChapterCard 
-              title={chapter.title}
-              description={chapter.description}
-              status={chapter.status}
-              duration={chapter.duration}
-              subjectColor={subjectColor}
-              showStudyIcon={index === 0} // Show study icon for the first chapter as an example
-            />
-          </div>
-        ))}
+        {chapters.map((chapter, index) => {
+          // For 8th grade, first chapter, set progress to 0 if showFractions is true
+          let progress = undefined;
+          if (gradeId === 8 && index === 0 && showFractions) {
+            progress = 0;
+          }
+          
+          return (
+            <div key={index} onClick={() => handleChapterClick(chapter, index)}>
+              <ChapterCard 
+                title={chapter.title}
+                description={chapter.description}
+                status={chapter.status}
+                duration={chapter.duration}
+                subjectColor={subjectColor}
+                showStudyIcon={index === 0} 
+                progress={progress}
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );

@@ -1,12 +1,12 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import SubjectCard from "@/components/SubjectCard";
 import { 
   BookOpen, 
-  Beaker,  // Replace Flask with Beaker
+  Beaker,
   BookText, 
   Clock, 
   Globe, 
@@ -14,11 +14,12 @@ import {
   Loader2
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 
 // Mock subject data
 const mockSubjects = [
   {
-    id: "1",
+    id: "mathematics",
     name: "Mathematics",
     description: "Learn algebra, geometry, and calculus concepts",
     coverImage: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=500",
@@ -82,7 +83,16 @@ const mockSubjects = [
 const Subjects = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [selectedGrade] = useState<number>(user?.grade || 6);
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  
+  // Get grade and subject from URL parameters or use defaults
+  const gradeParam = searchParams.get('grade');
+  const subjectParam = searchParams.get('subject');
+  
+  const [selectedGrade, setSelectedGrade] = useState<number>(
+    gradeParam ? parseInt(gradeParam) : user?.grade || 6
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [subjects, setSubjects] = useState<any[]>([]);
 
@@ -93,7 +103,21 @@ const Subjects = () => {
       try {
         // Simulating API call delay
         await new Promise(resolve => setTimeout(resolve, 1500));
-        setSubjects(mockSubjects);
+        
+        // If it's 8th grade and a subject parameter exists, customize the subjects list
+        if (selectedGrade === 8 && subjectParam) {
+          const customSubjects = [...mockSubjects];
+          const targetSubject = customSubjects.find(s => s.id.toLowerCase() === subjectParam.toLowerCase());
+          
+          if (targetSubject) {
+            // Set progress to 0% for the target subject to indicate it's just starting
+            targetSubject.progress = 0;
+          }
+          
+          setSubjects(customSubjects);
+        } else {
+          setSubjects(mockSubjects);
+        }
       } catch (error) {
         console.error("Error fetching subjects:", error);
       } finally {
@@ -102,9 +126,25 @@ const Subjects = () => {
     };
 
     fetchSubjects();
-  }, []);
+  }, [selectedGrade, subjectParam]);
+
+  useEffect(() => {
+    // Automatically navigate to the subject page if grade is 8 and subject is mathematics
+    if (selectedGrade === 8 && subjectParam && subjectParam.toLowerCase() === "mathematics") {
+      // Small delay to show the subjects page briefly
+      const timer = setTimeout(() => {
+        navigate(`/subject/mathematics`);
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedGrade, subjectParam, navigate]);
 
   const handleSubjectClick = (subjectId: string) => {
+    // Special handling for 8th grade mathematics
+    if (selectedGrade === 8 && subjectId === "mathematics") {
+      navigate(`/subject/${subjectId}?grade=8&showFractions=true`);
+      return;
+    }
     navigate(`/subject/${subjectId}`);
   };
 
